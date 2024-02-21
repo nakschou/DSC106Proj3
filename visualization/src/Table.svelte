@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import * as d3 from 'd3';
     import RangeSlider from 'svelte-range-slider-pips';
+    import { Popover, Button } from 'flowbite-svelte';
 
     let data = [];
     let filteredData = [];
@@ -36,6 +37,7 @@
         .style("border", "1px solid black");
 
         const color = d3.scaleOrdinal(d3.schemeCategory10);
+        //const color = d3.scaleOrdinal().domain(data.map(d => d.id)).range(d3.schemeCategory10);
 
         const root = d3.hierarchy({children: data})
         .sum(d => d.value)
@@ -100,10 +102,12 @@
 
 <div class="slider-container">
     
-    <label for="maxBatch">Max Batch: {values[1]}</label>
+    <label id="b1" for="maxBatch">Max Batch: {values[1]}</label>
     <label for="minBatch">Min Batch: {values[0]}</label>
     <RangeSlider range min={0} max={29} pips all="label" bind:values/>
 </div>
+<Popover class="w-64 text-sm font-light " title="Popover title" triggeredBy="#treemap">And here's some amazing content. It's very engaging. Right?</Popover>
+
 
 <svg id="treemap"></svg>
 

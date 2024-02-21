@@ -17,11 +17,13 @@
     "rollup-plugin-css-only": "^4.3.0",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^7.1.2",
-    "svelte": "^3.55.0",
+    "svelte": "^4.2.11",
     "svelte-range-slider-pips": "^2.3.1"
   },
   "dependencies": {
     "d3": "^7.8.5",
+    "flowbite": "^2.3.0",
+    "flowbite-svelte": "^0.44.23",
     "sirv-cli": "^2.0.0"
   }
 }
