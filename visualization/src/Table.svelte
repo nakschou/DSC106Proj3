@@ -71,11 +71,12 @@
                 detail: { id: nodeId },
                 bubbles: true // This makes the event bubble up through the DOM
             }));
-
-            d3.select(this).style("fill", "black");
+            let newcolor = d3.hsl(color(d.data.id));
+            newcolor.l -= 0.2;
+            d3.select(this).style("fill", newcolor);
         })
         .on("mouseout", function(d) {
-            d3.select(this).style("fill", d => color(d.parent.data.id));
+            d3.select(this).style("fill", d => color(d.data.id));
         }).merge(node)
 
         node.attr("x", d => d.x0)
