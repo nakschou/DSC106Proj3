@@ -22,10 +22,10 @@
     // }
 </script>
 
-<!-- <Table /> -->
+<Table />
 <!-- <button on:click={updateData}>Update Data</button>
 <Treemap {data} /> -->
-<MapboxMap />
+<!-- <MapboxMap /> -->
 
 
 
