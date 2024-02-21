@@ -54,8 +54,8 @@
         totalmoney = data.reduce((acc, d) => acc + d.value, 0);
 
         const margin = { top: 10, right: 10, bottom: 10, left: 10 },
-            width = 800 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
+            width = 1200 - margin.left - margin.right,
+            height = 600 - margin.top - margin.bottom;
 
         const svg = d3.select("#treemap")
         .attr("width", width + margin.left + margin.right)
@@ -77,6 +77,8 @@
         const node = svg.selectAll("rect")
         .data(root.leaves(), d => d.data.id);
 
+        console.log(root.leaves())
+
         node.enter().append("rect")
         .attr("x", d => d.x0)
         .attr("y", d => d.y0)
@@ -84,7 +86,7 @@
         .attr("height", 0)
         .attr("id", d => `rect_${d.data.id}`)
         .style("fill", d => colorMapping[d.data.id] || '#999')
-        .text(function(d){ return d.parent.data.value})
+        .text(d => d.data.id)
         .on("mouseover", function(event, d) {
             const nodeId = d.data.id; // Assuming 'id' is the property holding the ID.
             popoverTitle = nodeId;
@@ -119,6 +121,7 @@
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
         .attr("id", d => `rect_${d.data.id}`)
+        .text("testing")
         .style("fill", d => colorMapping[d.data.id] || '#999');
 
         node.exit()
