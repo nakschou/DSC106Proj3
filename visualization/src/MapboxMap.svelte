@@ -22,7 +22,7 @@
     onMount(() => {
         const map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/light-v10',
+            style: 'mapbox://styles/mapbox/light-v11',
             center: [0, 0],
             zoom: 1
         });

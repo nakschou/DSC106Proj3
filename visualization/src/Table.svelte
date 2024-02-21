@@ -11,6 +11,9 @@
     let selectedMinBatch = minBatchIndex;
     let selectedMaxBatch = maxBatchIndex;
     let values = [0,29];
+    let popoverTitle = 'Details';
+    let popoverContent = 'Hover over an item to see details.';
+
 
     onMount(async () => {
         data = await d3.json('data/yc_data_cleaned.json');
@@ -42,6 +45,7 @@
         const root = d3.hierarchy({children: data})
         .sum(d => d.value)
         .sort((a, b) => b.value - a.value);
+  
 
         d3.treemap()
         .size([width, height])
@@ -51,14 +55,27 @@
         const node = svg.selectAll("rect")
         .data(root.leaves(), d => d.data.id);
 
-
         node.enter().append("rect")
         .attr("x", d => d.x0)
         .attr("y", d => d.y0)
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
         .style("fill", d => color(d.parent.data.id))
-        .text(function(d){ return d.parent.data.value});
+        .text(function(d){ return d.parent.data.value})
+        .on("mouseover", function(event, d) {
+            const nodeId = d.data.id; // Assuming 'id' is the property holding the ID.
+            popoverTitle = nodeId;
+            popoverContent = `Value: ${d.data.value}`;
+            this.dispatchEvent(new CustomEvent('node-hover', {
+                detail: { id: nodeId },
+                bubbles: true // This makes the event bubble up through the DOM
+            }));
+
+            d3.select(this).style("fill", "black");
+        })
+        .on("mouseout", function(d) {
+            d3.select(this).style("fill", d => color(d.parent.data.id));
+        }).merge(node)
 
         node.attr("x", d => d.x0)
         .attr("y", d => d.y0)
@@ -108,7 +125,9 @@
     <label for="minBatch">Min Batch: {values[0]}</label>
     <RangeSlider range min={0} max={29} pips all="label" bind:values/>
 </div>
-<Popover class="w-64 text-sm font-light " title="Popover title" triggeredBy="#treemap">And here's some amazing content. It's very engaging. Right?</Popover>
+<Popover class="w-64 text-sm font-light" title={popoverTitle} triggeredBy="#treemap">
+    {popoverContent}
+</Popover>
 
 
 <svg id="treemap"></svg>

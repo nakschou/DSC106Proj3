@@ -1,6 +1,6 @@
 <script>
     import Table from './Table.svelte';
-    import MapboxMap from './MapboxMap.svelte';
+    // import MapboxMap from './MapboxMap.svelte';
 
     // import Treemap from './Treemap.svelte';
 
