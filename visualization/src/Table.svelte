@@ -1,13 +1,15 @@
 <script>
     import { onMount } from 'svelte';
     import * as d3 from 'd3';
+    import RangeSlider from 'svelte-range-slider-pips';
 
     let data = [];
     let filteredData = [];
     let minBatchIndex = 0;
-    let maxBatchIndex = 100; // Set this based on your data
+    let maxBatchIndex = 29; // Set this based on your data
     let selectedMinBatch = minBatchIndex;
     let selectedMaxBatch = maxBatchIndex;
+    let values = [0,29];
 
     onMount(async () => {
         data = await d3.json('data/yc_data.json');
@@ -15,23 +17,20 @@
         const batchIndices = data.map(d => d['Batch Number']);
         minBatchIndex = Math.min(...batchIndices);
         maxBatchIndex = Math.max(...batchIndices);
-        selectedMinBatch = minBatchIndex;
-        selectedMaxBatch = maxBatchIndex;
+        selectedMinBatch = values[0];
+        selectedMaxBatch = values[1];
         filteredData = data;
     });
 
-    $: filteredData = data.filter(d => d['Batch Number'] >= selectedMinBatch && d['Batch Number'] <= selectedMaxBatch);
+    $: filteredData = data.filter(d => d['Batch Number'] >= values[0] && d['Batch Number'] <= values[1]);
+
 </script>
 
 <div class="slider-container">
-    <div>
-        <label for="minBatch">Min Batch: {selectedMinBatch}</label>
-        <input type="range" min={minBatchIndex} max={maxBatchIndex} bind:value={selectedMinBatch} id="minBatch">
-    </div>
-    <div>
-        <label for="maxBatch">Max Batch: {selectedMaxBatch}</label>
-        <input type="range" min={minBatchIndex} max={maxBatchIndex} bind:value={selectedMaxBatch} id="maxBatch">
-    </div>
+    
+    <label for="maxBatch">Max Batch: {values[1]}</label>
+    <label for="minBatch">Min Batch: {values[0]}</label>
+    <RangeSlider range min={0} max={29} pips all="label" bind:values/>
 </div>
 
 <table>
