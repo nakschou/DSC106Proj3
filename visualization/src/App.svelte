@@ -1,5 +1,7 @@
 <script>
     import Table from './Table.svelte';
+    import MapboxMap from './MapboxMap.svelte';
+
     // import Treemap from './Treemap.svelte';
 
     // // Sample data
@@ -20,6 +22,10 @@
     // }
 </script>
 
-<Table />
+<!-- <Table /> -->
 <!-- <button on:click={updateData}>Update Data</button>
 <Treemap {data} /> -->
+<MapboxMap />
+
+
+
