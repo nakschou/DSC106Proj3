@@ -51,12 +51,14 @@
         const node = svg.selectAll("rect")
         .data(root.leaves(), d => d.data.id);
 
+
         node.enter().append("rect")
         .attr("x", d => d.x0)
         .attr("y", d => d.y0)
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
-        .style("fill", d => color(d.parent.data.id));
+        .style("fill", d => color(d.parent.data.id))
+        .text(function(d){ return d.parent.data.value});
 
         node.attr("x", d => d.x0)
         .attr("y", d => d.y0)
