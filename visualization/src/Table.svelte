@@ -12,7 +12,7 @@
     let values = [0,29];
 
     onMount(async () => {
-        data = await d3.json('data/yc_data.json');
+        data = await d3.json('data/yc_data_cleaned.json');
         // Dynamically determine the min and max batch numbers
         const batchIndices = data.map(d => d['Batch Number']);
         minBatchIndex = Math.min(...batchIndices);
@@ -23,6 +23,78 @@
     });
 
     $: filteredData = data.filter(d => d['Batch Number'] >= values[0] && d['Batch Number'] <= values[1]);
+  
+    // Function to create or update the treemap
+    function createTreemap(data) {
+        const margin = { top: 10, right: 10, bottom: 10, left: 10 },
+            width = 800 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        const svg = d3.select("#treemap")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style("border", "1px solid black");
+
+        const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        const root = d3.hierarchy({children: data})
+        .sum(d => d.value)
+        .sort((a, b) => b.value - a.value);
+
+        d3.treemap()
+        .size([width, height])
+        .padding(1)
+        (root);
+
+        const node = svg.selectAll("rect")
+        .data(root.leaves(), d => d.data.id);
+
+        node.enter().append("rect")
+        .attr("x", d => d.x0)
+        .attr("y", d => d.y0)
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0)
+        .style("fill", d => color(d.parent.data.id));
+
+        node.attr("x", d => d.x0)
+        .attr("y", d => d.y0)
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0);
+
+        node.exit().remove();
+    }
+
+    onMount(() => {
+        createTreemap(data);
+    });
+
+    function convertToSummedCategoriesWithNullHandling(dataList) {
+        const categorySums = {};
+
+        // Sum funding amounts by category, treating null as 0
+        dataList.forEach(item => {
+            const fundingToAdd = item.Funding === null ? 0 : item.Funding;
+            if (categorySums[item.Category]) {
+            // If category exists, add to its funding
+            categorySums[item.Category] += fundingToAdd;
+            } else {
+            // If category doesn't exist, initialize it with funding or 0 if null
+            categorySums[item.Category] = fundingToAdd;
+            }
+        });
+
+        // Convert the result to the desired array format
+        const result = Object.keys(categorySums).map(key => {
+            return { id: key, value: categorySums[key] };
+        });
+
+        return result;
+    }
+
+
+    $: if(filteredData) {
+        createTreemap(convertToSummedCategoriesWithNullHandling(filteredData));
+    }
 
 </script>
 
@@ -33,49 +105,12 @@
     <RangeSlider range min={0} max={29} pips all="label" bind:values/>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Company Name</th>
-            <th>Status</th>
-            <th>Alexa Rank</th>
-            <th>Batch Number</th>
-            <!-- Add more headers as needed -->
-        </tr>
-    </thead>
-    <tbody>
-        {#each filteredData as company}
-            <tr>
-                <td>{company['Company Name']}</td>
-                <td>{company.Status}</td>
-                <td>{company['Alexa Rank']}</td>
-                <td>{company['Batch Number']}</td>
-                <!-- Add more cells as needed -->
-            </tr>
-        {/each}
-    </tbody>
-</table>
+<svg id="treemap"></svg>
 
 <style>
     .slider-container {
         display: flex;
         flex-direction: column;
         gap: 10px;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #f4f4f4;
-    }
-    input[type="range"] {
-        width: 100%;
-        margin: 10px 0;
     }
 </style>
