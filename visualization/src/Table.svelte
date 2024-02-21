@@ -115,6 +115,15 @@
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0);
 
+        node
+        .enter()
+        .append("text")
+        .attr("x", function(d){ return d.x0+10})    // +10 to adjust position (more right)
+            .attr("y", function(d){ return d.y0+20})    // +20 to adjust position (lower)
+            .text(function(d){ return d.data.id + "\n" + d.data.value})
+            .attr("font-size", "15px")
+            .attr("fill", "white")
+
         node.transition().duration(500)
         .attr("x", d => d.x0)
         .attr("y", d => d.y0)
@@ -129,6 +138,7 @@
         .attr("width", 0) // Transition to 0 width and height for a shrink effect
         .attr("height", 0)
         .remove();
+
     }
 
     onMount(() => {
