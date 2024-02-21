@@ -66,7 +66,8 @@
         .on("mouseover", function(event, d) {
             const nodeId = d.data.id; // Assuming 'id' is the property holding the ID.
             popoverTitle = nodeId;
-            popoverContent = `Value: ${d.data.value}`;
+            console.log(d.data.value, formatMoney(d.data.value));
+            popoverContent = `Value: ${formatMoney(d.data.value)}`;
             this.dispatchEvent(new CustomEvent('node-hover', {
                 detail: { id: nodeId },
                 bubbles: true // This makes the event bubble up through the DOM
@@ -93,18 +94,40 @@
         createTreemap(data);
     });
 
+    function formatMoney(value) {
+        // Convert value to a number in case it's passed as a string
+        const num = Number(value);
+
+        // Determine the suffix and calculate the final value based on the magnitude
+        let suffix = 'M';
+        let finalValue = num;
+        if (num >= 1000) { // For billions
+            suffix = 'B';
+            finalValue = num / 1000;
+        }
+
+        // Format the number to always have three decimal places
+        // Note: toLocaleString rounds the number, not just truncates it, providing a more accurate representation
+        const formattedNumber = finalValue.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+
+        return `$${formattedNumber}${suffix}`;
+    }
+
     function convertToSummedCategoriesWithNullHandling(dataList) {
         const categorySums = {};
 
         // Sum funding amounts by category, treating null as 0
         dataList.forEach(item => {
             const fundingToAdd = item.Funding === null ? 0 : item.Funding;
-            if (categorySums[item.Category]) {
-            // If category exists, add to its funding
-            categorySums[item.Category] += fundingToAdd;
-            } else {
-            // If category doesn't exist, initialize it with funding or 0 if null
-            categorySums[item.Category] = fundingToAdd;
+            if (item.Category == null) {
+            } else{
+                if (categorySums[item.Category]) {
+                    // If category exists, add to its funding
+                    categorySums[item.Category] += fundingToAdd;
+                } else {
+                    // If category doesn't exist, initialize it with funding or 0 if null
+                    categorySums[item.Category] = fundingToAdd;
+                }
             }
         });
 
