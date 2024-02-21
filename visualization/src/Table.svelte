@@ -13,6 +13,7 @@
     let values = [0,29];
     let popoverTitle = 'Details';
     let popoverContent = 'Hover over an item to see details.';
+    let totalmoney = 0;
 
 
     onMount(async () => {
@@ -30,6 +31,9 @@
   
     // Function to create or update the treemap
     function createTreemap(data) {
+        // change total money
+        totalmoney = data.reduce((acc, d) => acc + d.value, 0);
+
         const margin = { top: 10, right: 10, bottom: 10, left: 10 },
             width = 800 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
@@ -66,7 +70,6 @@
         .on("mouseover", function(event, d) {
             const nodeId = d.data.id; // Assuming 'id' is the property holding the ID.
             popoverTitle = nodeId;
-            console.log(d.data.value, formatMoney(d.data.value));
             popoverContent = `Value: ${formatMoney(d.data.value)}`;
             this.dispatchEvent(new CustomEvent('node-hover', {
                 detail: { id: nodeId },
@@ -141,6 +144,7 @@
 
 
     $: if(filteredData) {
+        
         createTreemap(convertToSummedCategoriesWithNullHandling(filteredData));
     }
 
