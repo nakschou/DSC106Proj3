@@ -18,21 +18,21 @@
     let currstate = 0;
 
     const colorMapping = {
-        'Other SaaS': '#FF5733',
-        'Entertainment': '#33FF57',
-        'Fintech': '#3357FF',
-        'Consumer': '#F333FF',
-        'Industrial': '#FF8333',
-        'Dev Tools': '#33FFF5',
-        'Real Estate': '#F5FF33',
-        'Healthcare': '#FF3358',
-        'Education': '#8D33FF',
-        'Agriculture': '#33FF8D',
-        'Transport': '#FF5733',
-        'Aerospace': '#578DFF',
-        'Nonprofit': '#FF8D57',
-        'Resources': '#8DFF57',
-        'Government': '#5733FF'
+        'Other SaaS': '#530089',
+        'Entertainment': '#CF0057',
+        'Fintech': '#E70056',
+        'Consumer': '#390099',
+        'Industrial': '#FF5400',
+        'Dev Tools': '#FF0054',
+        'Real Estate': '#FF3F15',
+        'Healthcare': '#9E0059',
+        'Education': '#FF8900',
+        'Agriculture': '#FFBD00',
+        'Transport': '#6C0079',
+        'Aerospace': '#FF2A2A',
+        'Nonprofit': '#FFD250',
+        'Resources': '#FFB000',
+        'Government': '#FFA300'
     };
 
     onMount(async () => {
