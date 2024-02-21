@@ -14,6 +14,8 @@
     let popoverTitle = 'Details';
     let popoverContent = 'Hover over an item to see details.';
     let totalmoney = 0;
+    let currcat = "All";
+    let currstate = 0;
 
     const colorMapping = {
         'Other SaaS': '#FF5733',
@@ -78,8 +80,8 @@
         node.enter().append("rect")
         .attr("x", d => d.x0)
         .attr("y", d => d.y0)
-        .attr("width", d => d.x1 - d.x0)
-        .attr("height", d => d.y1 - d.y0)
+        .attr("width", 0)
+        .attr("height", 0)
         .attr("id", d => `rect_${d.data.id}`)
         .style("fill", d => colorMapping[d.data.id] || '#999')
         .text(function(d){ return d.parent.data.value})
@@ -97,21 +99,47 @@
         })
         .on("mouseout", function(d) {
             d3.select(this).style("fill", d => colorMapping[d.data.id] || '#999');
-        }).merge(node)
+        })
+        .on("click", function(event, d) {
+            if (currstate === 0) {
+                currcat = d.data.id; // Update currcat to the clicked category
+                currstate = 1; // Change state to show breakdown by company
+            } else {
+                currcat = "All"; // Reset currcat to "All"
+                currstate = 0; // Change state to show total funding by category
+            }
+            updateTreemap(); // Call a function to update the treemap with the new data
+        }).merge(node).transition().duration(500) // Apply a transition for the entering elements
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0);
 
-        node.attr("x", d => d.x0)
+        node.transition().duration(500)
+        .attr("x", d => d.x0)
         .attr("y", d => d.y0)
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
         .attr("id", d => `rect_${d.data.id}`)
         .style("fill", d => colorMapping[d.data.id] || '#999');
 
-        node.exit().remove();
+        node.exit()
+        .transition().duration(500)
+        .attr("width", 0) // Transition to 0 width and height for a shrink effect
+        .attr("height", 0)
+        .remove();
     }
 
     onMount(() => {
         createTreemap(data);
     });
+
+    function updateTreemap() {
+        if (currstate === 1) {
+            const categoryData = filteredData.filter(d => d.Category === currcat);
+            createTreemap(convertToCompanyFundingWithinCategory(categoryData));
+        } else {
+            createTreemap(convertToSummedCategoriesWithNullHandling(filteredData));
+        }
+    }
 
     function formatMoney(value) {
         // Convert value to a number in case it's passed as a string
@@ -158,10 +186,30 @@
         return result;
     }
 
+    function convertToCompanyFundingWithinCategory(dataList) {
+        const companySums = {};
+        dataList.forEach(item => {
+            const fundingToAdd = item.Funding === null ? 0 : item.Funding;
+            const companyName = item["Company Name"]; // Assuming you have a CompanyName field
+            if (companySums[companyName]) {
+                companySums[companyName] += fundingToAdd;
+            } else {
+                companySums[companyName] = fundingToAdd;
+            }
+        });
+        const result = Object.keys(companySums).map(key => {
+            return { id: key, value: companySums[key] };
+        });
+        return result;
+    }
 
-    $: if(filteredData) {
-        
+
+    $: if(filteredData && currstate === 0) {
         createTreemap(convertToSummedCategoriesWithNullHandling(filteredData));
+    } else if(filteredData && currstate === 1) {
+        // Filter data for the selected category and aggregate by company
+        const categoryData = filteredData.filter(d => d.Category === currcat);
+        createTreemap(convertToCompanyFundingWithinCategory(categoryData));
     }
 
 </script>
