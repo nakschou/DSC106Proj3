@@ -60,7 +60,8 @@
         .attr("y", d => d.y0)
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
-        .style("fill", d => color(d.parent.data.id))
+        .attr("id", d => `rect_${d.data.id}`)
+        .style("fill", d => color(d.data.id))
         .text(function(d){ return d.parent.data.value})
         .on("mouseover", function(event, d) {
             const nodeId = d.data.id; // Assuming 'id' is the property holding the ID.
@@ -80,7 +81,9 @@
         node.attr("x", d => d.x0)
         .attr("y", d => d.y0)
         .attr("width", d => d.x1 - d.x0)
-        .attr("height", d => d.y1 - d.y0);
+        .attr("height", d => d.y1 - d.y0)
+        .attr("id", d => `rect_${d.data.id}`)
+        .style("fill", d => color(d.data.id));
 
         node.exit().remove();
     }
