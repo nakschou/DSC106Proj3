@@ -15,6 +15,23 @@
     let popoverContent = 'Hover over an item to see details.';
     let totalmoney = 0;
 
+    const colorMapping = {
+        'Other SaaS': '#FF5733',
+        'Entertainment': '#33FF57',
+        'Fintech': '#3357FF',
+        'Consumer': '#F333FF',
+        'Industrial': '#FF8333',
+        'Dev Tools': '#33FFF5',
+        'Real Estate': '#F5FF33',
+        'Healthcare': '#FF3358',
+        'Education': '#8D33FF',
+        'Agriculture': '#33FF8D',
+        'Transport': '#FF5733',
+        'Aerospace': '#578DFF',
+        'Nonprofit': '#FF8D57',
+        'Resources': '#8DFF57',
+        'Government': '#5733FF'
+    };
 
     onMount(async () => {
         data = await d3.json('data/yc_data_cleaned.json');
@@ -43,7 +60,6 @@
         .attr("height", height + margin.top + margin.bottom)
         .style("border", "1px solid black");
 
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
         //const color = d3.scaleOrdinal().domain(data.map(d => d.id)).range(d3.schemeCategory10);
 
         const root = d3.hierarchy({children: data})
@@ -65,7 +81,7 @@
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
         .attr("id", d => `rect_${d.data.id}`)
-        .style("fill", d => color(d.data.id))
+        .style("fill", d => colorMapping[d.data.id] || '#999')
         .text(function(d){ return d.parent.data.value})
         .on("mouseover", function(event, d) {
             const nodeId = d.data.id; // Assuming 'id' is the property holding the ID.
@@ -75,12 +91,12 @@
                 detail: { id: nodeId },
                 bubbles: true // This makes the event bubble up through the DOM
             }));
-            let newcolor = d3.hsl(color(d.data.id));
+            let newcolor = d3.hsl(colorMapping[d.data.id]);
             newcolor.l -= 0.2;
-            d3.select(this).style("fill", newcolor);
+            d3.select(this).style("fill", d => newcolor || '#999');
         })
         .on("mouseout", function(d) {
-            d3.select(this).style("fill", d => color(d.data.id));
+            d3.select(this).style("fill", d => colorMapping[d.data.id] || '#999');
         }).merge(node)
 
         node.attr("x", d => d.x0)
@@ -88,7 +104,7 @@
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
         .attr("id", d => `rect_${d.data.id}`)
-        .style("fill", d => color(d.data.id));
+        .style("fill", d => colorMapping[d.data.id] || '#999');
 
         node.exit().remove();
     }
