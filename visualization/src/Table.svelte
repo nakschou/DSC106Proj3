@@ -120,16 +120,23 @@
 
         text.exit().remove();
 
+
         text.enter().append("text")
         .attr("x", d => d.x0 + 10)
         .attr("y", d => d.y0 + 20)
-        .text(d => `${d.data.id}\n${formatMoney(d.data.value)}`)
+        .text(function(d) {
+            if(d.x1 - d.x0 > 100) {
+                return `${d.data.id}\n${formatMoney(d.data.value)}`;
+            }else {
+                return ".";
+            }
+        })
         .attr("font-size", "0px")
         .attr("fill", "white")
         .merge(text).transition().duration(500)
         .attr("font-size", "15px")
-        .attr("x", d => d.x0 + 10)
-        .attr("y", d => d.y0 + 20);
+        .attr("x", d => d.x0 + 0.1*(d.x1 - d.x0))
+        .attr("y", d => d.y0 + 0.5*(d.y1 - d.y0));
 
         node.transition().duration(500)
         .attr("x", d => d.x0)
