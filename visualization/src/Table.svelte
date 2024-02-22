@@ -17,6 +17,12 @@
     let totalmoney = 0;
     let currcat = "All";
     let currstate = 0;
+    let currcompany ={};
+    let recorded_mouse_position = {
+		x: 0, y: 0
+	};
+    let hovered = -1;
+
 
     const batchNames = [
         'S05', 'W06', 'S06', 'W07', 'S07', 'W08', 'S08', 'W09', 'S09', 'W10',
@@ -141,7 +147,7 @@
             newcolor.l -= 0.2;
             d3.select(this).style("fill", d => newcolor || '#999');
             if (currstate === 1) {
-                console.log(getCompanyInfo(d.data.id, master))
+                currcompany = getCompanyInfo(d.data.id, master)
             }
             mouseover;
 
@@ -318,6 +324,12 @@
         });
         return result;
     }
+    
+    function displayCompany(compinfo) {
+        if (compinfo) {
+            return compi
+        }
+    }
 
 
     $: if(filteredData && currstate === 0) {
@@ -336,12 +348,20 @@
     <label for="minBatch">Oldest Batch: {batchNames[values[0]]}</label>
     <RangeSlider formatter={v => batchNames[v]} range min={0} max={29} pips all="label" bind:values/>
 </div>
-<Popover class="w-64 text-sm font-light" title={popoverTitle} triggeredBy="#treemap">
-    {popoverContent}
-</Popover>
+
 
 
 <svg id="treemap"></svg>
+<div class={currstate === 1 ? "company-card": ""}>
+    {#if currstate === 1}
+        <h2>{ currcompany ? currcompany["Company Name"] : "nothing" }</h2>
+        <p>Batch: { currcompany["Batch"] ? currcompany["Batch"] : "Not Available"}</p>
+        <p>Funding Amount: { currcompany["Funding"] ? formatMoney(currcompany["Funding"]) : "Not Available"}</p>
+        <p>Location: { currcompany["Location"] ? currcompany["Location"] : "Not Available"}</p>
+        <p>Status: { currcompany["Status"] ? currcompany["Status"] : "Not Available"}</p>
+    {/if}
+</div>
+
 
 
 <style>
@@ -350,4 +370,25 @@
         flex-direction: column;
         gap: 10px;
     }
+
+    /* Add your styling here */
+  .company-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    margin-bottom: 8px;
+    margin: 5px;
+    color: #333;
+  }
+
+  p {
+    margin: 5px;
+    color: #777;
+  }
 </style>
