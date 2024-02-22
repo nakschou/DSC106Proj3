@@ -55,6 +55,41 @@
                         .addTo(map);
                 }
             });
+
+            // Add legend using D3
+            const legend = d3.select('body').append('div')
+                .attr('class', 'legend')
+                .style('position', 'absolute')
+                .style('bottom', '30px')
+                .style('left', '30px')
+                .style('background-color', 'white')
+                .style('padding', '10px')
+                .style('border-radius', '5px')
+                .style('font-size', '12px')
+                .style('box-shadow', '0 2px 4px rgba(0, 0, 0, 0.1)');
+
+            legend.append('text')
+                .attr('x', 0)
+                .attr('y', -5)
+                .text('Number of Companies');
+            const colors = ['red', 'orange', 'green', 'blue', 'purple'];
+            const labels = ['> 150', '21 - 150', '11 - 20', '3 - 10', '1 - 2'];
+
+            const legendItems = legend.selectAll('.legend-item')
+                .data(colors)
+                .enter().append('div')
+                .attr('class', 'legend-item');
+
+            legendItems.append('div')
+                .attr('class', 'legend-key')
+                .style('display', 'inline-block')
+                .style('width', '20px')
+                .style('height', '10px')
+                .style('margin-right', '5px')
+                .style('background-color', d => d);
+
+            legendItems.append('span')
+                .text((d, i) => labels[i]);
         }).catch(function(error) {
             console.error("Error loading CSV file:", error);
         });
@@ -67,6 +102,16 @@
         top: 0;
         bottom: 0;
         width: 100%;
+    }
+
+    .legend {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+    }
+
+    .legend-item {
+        margin-bottom: 5px;
     }
 </style>
 
