@@ -21,7 +21,6 @@
     let recorded_mouse_position = {
 		x: 0, y: 0
 	};
-    let hovered = -1;
 
 
     const batchNames = [
@@ -149,7 +148,11 @@
             if (currstate === 1) {
                 currcompany = getCompanyInfo(d.data.id, master)
             }
-            mouseover;
+            recorded_mouse_position = {
+							x: event.x,
+							y: event.y
+						}
+
 
         })
         .on("mouseout", function(d) {
@@ -352,7 +355,12 @@
 
 
 <svg id="treemap"></svg>
-<div class={currstate === 1 ? "company-card": ""}>
+<div 
+    class={currstate === 1 ? "company-card": ""}
+    style="left: {recorded_mouse_position.x + 40}px; top: {recorded_mouse_position.y + 40}px"
+
+
+>
     {#if currstate === 1}
         <h2>{ currcompany ? currcompany["Company Name"] : "nothing" }</h2>
         <p>Batch: { currcompany["Batch"] ? currcompany["Batch"] : "Not Available"}</p>
