@@ -18,9 +18,9 @@
     let currstate = 0;
 
     const batchNames = [
-        's05', 'w06', 's06', 'w07', 's07', 'w08', 's08', 'w09', 's09', 'w10',
-        's10', 'w11', 's11', 'w12', 's12', 'w13', 's13', 'w14', 's14', 'w15',
-        's15', 'w16', 's16', 'w17', 's17', 'w18', 's18', 'w19', 's19', 'w20'
+        'S05', 'W06', 'S06', 'W07', 'S07', 'W08', 'S08', 'W09', 'S09', 'W10',
+        'S10', 'W11', 'S11', 'W12', 'S12', 'W13', 'S13', 'W14', 'S14', 'W15',
+        'S15', 'W16', 'S16', 'W17', 'S17', 'W18', 'S18', 'W19', 'S19', 'W20'
     ];
 
     const colorMapping = {
@@ -170,7 +170,7 @@
         .attr("x", d => d.x0 + 10)
         .attr("y", d => d.y0 + 20)
         .text(function(d) {
-            if(d.x1 - d.x0 > 100) {
+            if(d.x1 - d.x0 > 200) {
                 return `${d.data.id}\n${formatMoney(d.data.value)}`;
             }else {
                 return ".";
