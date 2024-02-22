@@ -17,6 +17,7 @@
     let totalmoney = 0;
     let currcat = "All";
     let currstate = 0;
+    let cardon = 0;
     let currcompany ={};
     let recorded_mouse_position = {
 		x: 0, y: 0
@@ -152,25 +153,27 @@
             newcolor.l -= 0.2;
             d3.select(this).style("fill", d => newcolor || '#999');
             if (currstate === 1) {
+                if (event.clientX > window.innerWidth / 2) {
+                    mouseX = event.clientX - 425;
+                } else {
+                    mouseX = event.clientX;
+                }
+                mouseY = event.clientY;
+                cardon = 1;
                 currcompany = getCompanyInfo(d.data.id, master)
             }
-            recorded_mouse_position = {
-							x: event.x,
-							y: event.y
-						}
-
-
         })
         .on("mouseout", function(d) {
             d3.select(this).style("fill", d => colorMapping[d.data.id] || '#999');
-            mouseleave;
+            cardon = 0;
         })
         .on("mousemove", function(event, d) {
-            recorded_mouse_position = {
-                x: d3.pointer(this)[0],
-                y: d3.pointer(this)[1]
+            if (event.clientX > window.innerWidth / 2) {
+                mouseX = event.clientX - 375;
+            } else {
+                mouseX = event.clientX;
             }
-
+            mouseY = event.clientY;
         })
         .on("click", function(event, d) {
             if (currstate === 0) {
@@ -368,20 +371,17 @@
 
 
 <svg id="treemap"></svg>
+{#if cardon === 1}
 <div 
-    class={currstate === 1 ? "company-card": ""}
-    style="left: {recorded_mouse_position.x + 40}px; top: {recorded_mouse_position.y + 40}px"
-
-
->
-    {#if currstate === 1}
-        <h2>{ currcompany ? currcompany["Company Name"] : "nothing" }</h2>
-        <p>Batch: { currcompany["Batch"] ? currcompany["Batch"] : "Not Available"}</p>
-        <p>Funding Amount: { currcompany["Funding"] ? formatMoney(currcompany["Funding"]) : "Not Available"}</p>
-        <p>Location: { currcompany["Location"] ? currcompany["Location"] : "Not Available"}</p>
-        <p>Status: { currcompany["Status"] ? currcompany["Status"] : "Not Available"}</p>
-    {/if}
+    class="company-card"
+    style="left: {mouseX}px; top: {mouseY}px">
+    <h2>{currcompany ? currcompany["Company Name"] : "nothing"}</h2>
+    <p>Batch: {currcompany["Batch"] ? currcompany["Batch"] : "Not Available"}</p>
+    <p>Funding Amount: {currcompany["Funding"] ? formatMoney(currcompany["Funding"]) : "Not Available"}</p>
+    <p>Location: {currcompany["Location"] ? currcompany["Location"] : "Not Available"}</p>
+    <p>Status: {currcompany["Status"] ? currcompany["Status"] : "Not Available"}</p>
 </div>
+{/if}
 
 
 
@@ -394,12 +394,14 @@
 
     /* Add your styling here */
   .company-card {
+    position: absolute;
     border: 1px solid #ddd;
     padding: 10px;
     margin: 10px;
     border-radius: 8px;
     width: 300px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
   }
 
   h2 {
