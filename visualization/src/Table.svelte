@@ -118,13 +118,16 @@
         const text = svg.selectAll("text")
         .data(root.leaves(), d => d.data.id);
 
+        text.exit().remove();
+
         text.enter().append("text")
         .attr("x", d => d.x0 + 10)
         .attr("y", d => d.y0 + 20)
         .text(d => `${d.data.id}\n${formatMoney(d.data.value)}`)
-        .attr("font-size", "15px")
+        .attr("font-size", "0px")
         .attr("fill", "white")
         .merge(text).transition().duration(500)
+        .attr("font-size", "15px")
         .attr("x", d => d.x0 + 10)
         .attr("y", d => d.y0 + 20);
 
