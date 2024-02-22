@@ -21,6 +21,8 @@
     let recorded_mouse_position = {
 		x: 0, y: 0
 	};
+    let mouseX = 0;
+    let mouseY = 0;
 
 
     const batchNames = [
@@ -95,7 +97,11 @@
     });
 
     $: filteredData = data.filter(d => d['Batch Number'] >= values[0] && d['Batch Number'] <= values[1]);
-  
+    
+    function handleMouseMove(event) {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    }
     // Function to create or update the treemap
     function createTreemap(data) {
         // change total money
@@ -108,7 +114,7 @@
         const svg = d3.select("#treemap")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .style("border", "1px solid black");
+        //.style("border", "1px solid black");
 
         //const color = d3.scaleOrdinal().domain(data.map(d => d.id)).range(d3.schemeCategory10);
 
@@ -158,6 +164,13 @@
         .on("mouseout", function(d) {
             d3.select(this).style("fill", d => colorMapping[d.data.id] || '#999');
             mouseleave;
+        })
+        .on("mousemove", function(event, d) {
+            recorded_mouse_position = {
+                x: d3.pointer(this)[0],
+                y: d3.pointer(this)[1]
+            }
+
         })
         .on("click", function(event, d) {
             if (currstate === 0) {
