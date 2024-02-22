@@ -17,6 +17,12 @@
     let currcat = "All";
     let currstate = 0;
 
+    const batchNames = [
+        's05', 'w06', 's06', 'w07', 's07', 'w08', 's08', 'w09', 's09', 'w10',
+        's10', 'w11', 's11', 'w12', 's12', 'w13', 's13', 'w14', 's14', 'w15',
+        's15', 'w16', 's16', 'w17', 's17', 'w18', 's18', 'w19', 's19', 'w20'
+    ];
+
     const colorMapping = {
         'Other SaaS': '#530089',
         'Entertainment': '#CF0057',
@@ -267,9 +273,9 @@
 
 <div class="slider-container">
     
-    <label id="b1" for="maxBatch">Max Batch: {values[1]}</label>
-    <label for="minBatch">Min Batch: {values[0]}</label>
-    <RangeSlider range min={0} max={29} pips all="label" bind:values/>
+    <label id="b1" for="maxBatch">Newest Batch: {batchNames[values[1]]}</label>
+    <label for="minBatch">Oldest Batch: {batchNames[values[0]]}</label>
+    <RangeSlider formatter={v => batchNames[v]} range min={0} max={29} pips all="label" bind:values/>
 </div>
 <Popover class="w-64 text-sm font-light" title={popoverTitle} triggeredBy="#treemap">
     {popoverContent}
