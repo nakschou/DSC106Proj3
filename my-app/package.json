@@ -1,0 +1,25 @@
+{
+  "name": "my-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npx gh-pages -d dist"
+
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.2",
+    "gh-pages": "^6.1.1",
+    "svelte": "^4.2.11",
+    "vite": "^5.1.4"
+  },
+  "dependencies": {
+    "d3": "^7.8.5",
+    "flowbite-svelte": "^0.44.23",
+    "mapbox-gl": "^3.1.2",
+    "svelte-range-slider-pips": "^2.3.1"
+  }
+}
