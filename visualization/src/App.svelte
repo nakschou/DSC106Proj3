@@ -1,3 +1,4 @@
+<!-- App.svelte -->
 <script>
     import Table from './Table.svelte';
     import MapboxMap from './MapboxMap.svelte';
@@ -7,6 +8,10 @@
 
     function switchInterface() {
         currentInterface = currentInterface === 'first' ? 'second' : 'first';
+        if (currentInterface === 'first') {
+            // Refresh the page when switching from the MapboxMap interface to Treemap
+            window.location.reload();
+        }
     }
 
     // Sample data
