@@ -41,6 +41,41 @@
         'Government': '#FFA300'
     };
 
+    var tooltip = d3.select("#treemap")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+
+
+
+    // A function that change this tooltip when the user hover a point.
+    // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
+    var mouseover = function(d) {
+        tooltip
+        .style("opacity", 1)
+    }
+
+    var mousemove = function(d) {
+        tooltip
+        .html("The exact value of<br>the Ground Living area is: " + d.id)
+        .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+        .style("top", (d3.mouse(this)[1]) + "px")
+    }
+
+    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    var mouseleave = function(d) {
+        tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0)
+    }
+
+
     onMount(async () => {
         data = await d3.json('data/yc_data_cleaned.json');
         // Dynamically determine the min and max batch numbers
@@ -104,9 +139,13 @@
             let newcolor = d3.hsl(colorMapping[d.data.id]);
             newcolor.l -= 0.2;
             d3.select(this).style("fill", d => newcolor || '#999');
+            console.log("thjis is happenendin");
+            mouseover;
+            mousemove;
         })
         .on("mouseout", function(d) {
             d3.select(this).style("fill", d => colorMapping[d.data.id] || '#999');
+            mouseleave;
         })
         .on("click", function(event, d) {
             if (currstate === 0) {
@@ -143,6 +182,13 @@
         .attr("font-size", "15px")
         .attr("x", d => d.x0 + 0.1*(d.x1 - d.x0))
         .attr("y", d => d.y0 + 0.5*(d.y1 - d.y0));
+
+
+        svg.selectAll("rect")
+        .data(root.leaves(), d => d.data.id).enter()
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove )
+        .on("mouseleave", mouseleave )
 
         node.transition().duration(500)
         .attr("x", d => d.x0)
