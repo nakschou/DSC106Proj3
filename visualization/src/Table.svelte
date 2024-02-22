@@ -5,6 +5,7 @@
     import { Popover, Button } from 'flowbite-svelte';
 
     let data = [];
+    let master = [];
     let filteredData = [];
     let minBatchIndex = 0;
     let maxBatchIndex = 29; // Set this based on your data
@@ -41,9 +42,9 @@
         'Government': '#FFA300'
     };
 
-    var tooltip = d3.select("#treemap")
+    const tooltip = d3.select("#tool")
     .append("div")
-    .style("opacity", 0)
+    .style("opacity", 1)
     .attr("class", "tooltip")
     .style("background-color", "white")
     .style("border", "solid")
@@ -55,29 +56,30 @@
 
     // A function that change this tooltip when the user hover a point.
     // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
-    var mouseover = function(d) {
+    const mouseover = function(d) {
         tooltip
         .style("opacity", 1)
     }
 
-    var mousemove = function(d) {
+    const mousemove = function(d) {
         tooltip
         .html("The exact value of<br>the Ground Living area is: " + d.id)
-        .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
-        .style("top", (d3.mouse(this)[1]) + "px")
+        .style("left", (d3.pointer(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+        .style("top", (d3.pointer(this)[1]) + "px")
     }
 
     // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
-    var mouseleave = function(d) {
+    const mouseleave = function(d) {
         tooltip
         .transition()
         .duration(200)
-        .style("opacity", 0)
+        .style("opacity", 1)
     }
 
 
     onMount(async () => {
         data = await d3.json('data/yc_data_cleaned.json');
+        master = data;
         // Dynamically determine the min and max batch numbers
         const batchIndices = data.map(d => d['Batch Number']);
         minBatchIndex = Math.min(...batchIndices);
@@ -118,7 +120,6 @@
         const node = svg.selectAll("rect")
         .data(root.leaves(), d => d.data.id);
 
-        console.log(root.leaves())
 
         node.enter().append("rect")
         .attr("x", d => d.x0)
@@ -139,9 +140,11 @@
             let newcolor = d3.hsl(colorMapping[d.data.id]);
             newcolor.l -= 0.2;
             d3.select(this).style("fill", d => newcolor || '#999');
-            console.log("thjis is happenendin");
+            if (currstate === 1) {
+                console.log(getCompanyInfo(d.data.id, master))
+            }
             mouseover;
-            mousemove;
+
         })
         .on("mouseout", function(d) {
             d3.select(this).style("fill", d => colorMapping[d.data.id] || '#999');
@@ -244,6 +247,16 @@
         }
     }
 
+    function getCompanyInfo(companyName, data) {
+        for (let i = 0; i < data.length; i++) {
+            const companyData = data[i]; // Assuming the keys are numbers
+            if (companyData['Company Name'] === companyName) {
+                return companyData;
+            }
+        }
+        //return null; // Company not found
+    }
+
     function formatMoney(value) {
         // Convert value to a number in case it's passed as a string
         const num = Number(value);
@@ -329,6 +342,7 @@
 
 
 <svg id="treemap"></svg>
+
 
 <style>
     .slider-container {
