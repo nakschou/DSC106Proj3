@@ -15,14 +15,20 @@
 
 </script>
 
-{#key currentInterface}
-    {#if currentInterface === 'first'}
-        <Table />
-    {/if}
+<!-- <div>
+    {#key currentInterface}
+        {#if currentInterface === 'first'}
+            <Table />
+        {/if}
 
-    {#if currentInterface === 'second'}
-        <MapboxMap />
-    {/if}
-{/key}
+        {#if currentInterface === 'second'}
+            <MapboxMap />
+        {/if}
+    {/key}
+</div>
 
-<button on:click={switchInterface}>Switch Interface</button>
+
+
+<button on:click={switchInterface}>Switch Interface</button> -->
+
+<Table />

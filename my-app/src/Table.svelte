@@ -17,13 +17,17 @@
     let totalmoney = 0;
     let currcat = "All";
     let currstate = 0;
+    let othercard = 0;
     let cardon = 0;
     let currcompany ={};
-    let recorded_mouse_position = {
-		x: 0, y: 0
-	};
     let mouseX = 0;
     let mouseY = 0;
+    let numCompanies = 0;
+    let numDead = 0;
+    let numExited = 0;
+    let numLive = 0;
+    let maxCat = "";
+    let maxcatamt = 0;
 
 
     const batchNames = [
@@ -161,11 +165,24 @@
                 mouseY = event.clientY;
                 cardon = 1;
                 currcompany = getCompanyInfo(d.data.id, master)
+            } else {
+                if (event.clientX > window.innerWidth / 2) {
+                    mouseX = event.clientX - 375;
+                } else {
+                    mouseX = event.clientX;
+                }
+                mouseY = event.clientY;
+                othercard = 1;
+                numDead = d.data.dead;
+                numExited = d.data.exited;
+                numLive = d.data.live;
+                numCompanies = d.data.num;
             }
         })
         .on("mouseout", function(d) {
             d3.select(this).style("fill", d => colorMapping[d.data.id] || '#999');
             cardon = 0;
+            othercard = 0;
         })
         .on("mousemove", function(event, d) {
             if (event.clientX > window.innerWidth / 2) {
@@ -303,6 +320,10 @@
 
     function convertToSummedCategoriesWithNullHandling(dataList) {
         const categorySums = {};
+        const categoryNums = {};
+        const categoryDead = {};
+        const categoryExited = {};
+        const categoryLive = {};
 
         // Sum funding amounts by category, treating null as 0
         dataList.forEach(item => {
@@ -312,16 +333,44 @@
                 if (categorySums[item.Category]) {
                     // If category exists, add to its funding
                     categorySums[item.Category] += fundingToAdd;
+                    categoryNums[item.Category] += 1;
                 } else {
                     // If category doesn't exist, initialize it with funding or 0 if null
                     categorySums[item.Category] = fundingToAdd;
+                    categoryNums[item.Category] = 1;
+                }
+                if (item.Status === "Dead") {
+                    if (categoryDead[item.Category]) {
+                        categoryDead[item.Category] += 1;
+                    } else {
+                        categoryDead[item.Category] = 1;
+                    }
+                } else if (item.Status === "Exited") {
+                    if (categoryExited[item.Category]) {
+                        categoryExited[item.Category] += 1;
+                    } else {
+                        categoryExited[item.Category] = 1;
+                    }
+                } else {
+                    if (categoryLive[item.Category]) {
+                        categoryLive[item.Category] += 1;
+                    } else {
+                        categoryLive[item.Category] = 1;
+                    }
+                }
+            totalmoney = 0;
+            for (let i = 0; i < Object.keys(categorySums).length; i++) {
+                if (categorySums[Object.keys(categorySums)[i]] > maxcatamt) {
+                    maxcatamt = categorySums[Object.keys(categorySums)[i]];
+                    maxCat = Object.keys(categorySums)[i];
+                    totalmoney += categorySums[Object.keys(categorySums)[i]];
                 }
             }
-        });
+        }});
 
         // Convert the result to the desired array format
         const result = Object.keys(categorySums).map(key => {
-            return { id: key, value: categorySums[key] };
+            return { id: key, value: categorySums[key], num: categoryNums[key], dead: categoryDead[key], exited: categoryExited[key], live: categoryLive[key]};
         });
 
         return result;
@@ -361,19 +410,43 @@
 
 </script>
 
+<h2>In which industries has YCombinator seen the most success over time?</h2>
+
+<div></div>
+
 <div class="slider-container">
-    
-    <label id="b1" for="maxBatch">Newest Batch: {batchNames[values[1]]}</label>
-    <label for="minBatch">Oldest Batch: {batchNames[values[0]]}</label>
     <RangeSlider formatter={v => batchNames[v]} range min={0} max={29} pips all="label" bind:values/>
 </div>
 
+<h3>Total Funding: {formatMoney(totalmoney)}</h3>
+{#if currstate === 0}
+<h3>The {maxCat} industry was responsible for {(maxcatamt/totalmoney*100).toFixed(0)}% of the funding in this timeframe</h3>
+{/if}
 
+{#if currstate === 0} 
+<p>Press on a category to learn more</p>
+{/if}
+{#if currstate === 1} 
+<p>Press anywhere on the treemap to return to default view</p>
+{/if}
 
 <svg id="treemap"></svg>
+
+
+{#if othercard === 1}
+<div 
+    class="card"
+    style="left: {mouseX}px; top: {mouseY}px">
+    <h2>{popoverTitle}</h2>
+    <p>Number of Companies: {numCompanies}</p>
+    <p>Number of Dead Companies: {numDead}</p>
+    <p>Number of Exited Companies: {numExited}</p>
+    <p>Number of Live Companies: {numLive}</p>
+</div>
+{/if}
 {#if cardon === 1}
 <div 
-    class="company-card"
+    class="card"
     style="left: {mouseX}px; top: {mouseY}px">
     <h2>{currcompany ? currcompany["Company Name"] : "nothing"}</h2>
     <p>Batch: {currcompany["Batch"] ? currcompany["Batch"] : "Not Available"}</p>
@@ -393,7 +466,7 @@
     }
 
     /* Add your styling here */
-  .company-card {
+  .card {
     position: absolute;
     border: 1px solid #ddd;
     padding: 10px;
@@ -403,8 +476,18 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: white;
   }
-
+  h1 {
+    size: 5px;
+    margin-bottom: 8px;
+    margin: 5px;
+    color: #333;
+  }
   h2 {
+    margin-bottom: 8px;
+    margin: 5px;
+    color: #333;
+  }
+  h3 {
     margin-bottom: 8px;
     margin: 5px;
     color: #333;
