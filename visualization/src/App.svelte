@@ -33,7 +33,6 @@
 </script>
 
 <Table />
-<button on:click={updateData}>Update Data</button>
 
 {#key currentInterface}
     {#if currentInterface === 'first'}
