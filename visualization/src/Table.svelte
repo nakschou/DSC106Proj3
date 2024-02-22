@@ -85,7 +85,7 @@
         .attr("width", 0)
         .attr("height", 0)
         .attr("id", d => `rect_${d.data.id}`)
-        .style("fill", d => colorMapping[d.data.id] || '#999')
+        .style("fill", d => (d.children ? generateColorScale(d.parent.data.id, d.data.id) : colorMapping[d.data.id] || '#999'))
         .text(d => d.data.id)
         .on("mouseover", function(event, d) {
             const nodeId = d.data.id; // Assuming 'id' is the property holding the ID.
@@ -115,14 +115,18 @@
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0);
 
-        node
-        .enter()
-        .append("text")
-        .attr("x", function(d){ return d.x0+10})    // +10 to adjust position (more right)
-            .attr("y", function(d){ return d.y0+20})    // +20 to adjust position (lower)
-            .text(function(d){ return d.data.id + "\n" + d.data.value})
-            .attr("font-size", "15px")
-            .attr("fill", "white")
+        const text = svg.selectAll("text")
+        .data(root.leaves(), d => d.data.id);
+
+        text.enter().append("text")
+        .attr("x", d => d.x0 + 10)
+        .attr("y", d => d.y0 + 20)
+        .text(d => `${d.data.id}\n${formatMoney(d.data.value)}`)
+        .attr("font-size", "15px")
+        .attr("fill", "white")
+        .merge(text).transition().duration(500)
+        .attr("x", d => d.x0 + 10)
+        .attr("y", d => d.y0 + 20);
 
         node.transition().duration(500)
         .attr("x", d => d.x0)
@@ -139,6 +143,30 @@
         .attr("height", 0)
         .remove();
 
+    }
+
+    // Function to generate a color scale based on the parent category's color
+    function generateColorScale(parentColor, childId) {
+        const startColor = parentColor || '#999'; // Default to gray if parentColor is not defined
+        const endColor = 'white';
+
+        const colorScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([startColor, endColor]);
+
+        // Calculate the position of the child within its parent's hierarchy
+        const positionInHierarchy = getParentHierarchyPosition(childId);
+
+        // Use the color scale to get the color based on the position
+        return colorScale(positionInHierarchy);
+    }
+
+    // Function to calculate the position of a child within its parent's hierarchy
+    function getParentHierarchyPosition(childId) {
+        const parentIndex = data.findIndex(item => item.id === childId);
+        const totalCategories = Object.keys(colorMapping).length;
+
+        return parentIndex / (totalCategories - 1); // Normalize to [0, 1]
     }
 
     onMount(() => {
