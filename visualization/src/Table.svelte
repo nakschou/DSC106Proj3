@@ -131,7 +131,7 @@
         .attr("x", d => d.x0 + 10)
         .attr("y", d => d.y0 + 20)
         .text(function(d) {
-            if(d.x1 - d.x0 > 100) {
+            if(d.x1 - d.x0 > 150) {
                 return `${d.data.id}\n${formatMoney(d.data.value)}`;
             }else {
                 return ".";

@@ -6,7 +6,7 @@
     mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhcmxpZS0yNzkiLCJhIjoiY2xzbXhmbm5yMHJsNzJrcDU3N2djZXB0YyJ9.NDuLBdFNAlnOX-t9Uvtatg';
 
     const getColor = (count) => {
-        if (count > 100) {
+        if (count > 150) {
             return 'red';
         } else if (count > 20) {
             return 'orange';
